@@ -1,0 +1,31 @@
+---
+title: "ASKEDIT"
+author: "Laura Pyle"
+date: "December 4, 2018"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-04_1827.r")
+
+# I do not know what is wrong....R can't find the file.  Need to fix levels for table 1.
+
+source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-04_1827.r")
+source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\temp_table1.r")
+source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\01_functions.r")
+
+# collapse insurance to private vs. public
+data$insnew[data$insurance==1] <- "Private"
+data$insnew[data$insurance != 1 & data$insurance !=6] <- "Public"
+data$insnew[data$insurance==6] <- "None"
+data$insnew <- as.factor(data$insnew)
+
+# Table 1
+tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","nih_race.factor","ethnicity.factor","insulindelivery.factor","cgm.factor","insnew","homes.factor","income.factor"),
+                    group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1)
+
+```
+
+
