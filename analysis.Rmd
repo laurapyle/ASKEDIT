@@ -8,11 +8,9 @@ output: word_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
-source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-04_1827.r")
+library(knitr)
 
-# I do not know what is wrong....R can't find the file.  Need to fix levels for table 1.
-
-source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-04_1827.r")
+source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-05_1420.r")
 source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\temp_table1.r")
 source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\01_functions.r")
 
@@ -20,12 +18,93 @@ source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\01_functions.r")
 data$insnew[data$insurance==1] <- "Private"
 data$insnew[data$insurance != 1 & data$insurance !=6] <- "Public"
 data$insnew[data$insurance==6] <- "None"
-data$insnew <- as.factor(data$insnew)
+
+# drop unused levels of group
+data$redcap_event_name.factor <-  droplevels(data$redcap_event_name.factor)
+
+# calculate deltas
+data$d.mwikad3 <- data$mwikad3month - data$mwikadenroll
+data$d.mwikad6 <- data$mwikad6month - data$mwikadenroll
+data$d.a1c3 <- data$a1c3month - data$enrolla1c
+data$d.a1c6 <- data$a1c6month - data$enrolla1c
+data$d.bgtest3 <- data$bgtest3month - data$enrollbgfrequency
+data$d.bgtest6 <- data$testing6month - data$enrollbgfrequency
+data$d.high3 <- data$high3month - data$enrollhigh
+data$d.high6 <- data$high6month - data$enrollhigh
+data$d.low3 <-data$low3month - data$enrolllow
+data$d.low6 <- data$low6month - data$enrolllow
+data$d.inrange3 <- data$inrange3month - data$enrollinrange
+data$d.inrange6 <- data$inrange6month - data$enrollinrange
+data$d.smod3 <- data$totalsmod3month - data$totalenroll
+data$d.smod6 <- data$totalsmod6month - data$totalenroll
+
+# labels
+label(data$nih_sex.factor)="Sex"
+label(data$nih_race.factor)="Race"
+label(data$ethnicity.factor)="Ethnicity"
+label(data$insulindelivery.factor)="Insulin delivery"
+label(data$cgm.factor)="CGM"
+label(data$homes.factor)="Do you live in more than one home?"
+label(data$income.factor)="Income"
+label(data$insnew)="Insurance"
+label(data$d.mwikad3)="Change in MWIKAD 3 mo"
+label(data$d.mwikad6)="Change in MWIKAD 6 mo"
+label(data$d.a1c3)="Change in A1c 3 mo"
+label(data$d.a1c6)="Change in A1c 6 mo"
+label(data$d.bgtest3)="Change in BG testing 3 mo"
+label(data$d.bgtest6)="Change in BG testing 6 mo"
+label(data$d.high3)="Change in % high 3 mo"
+label(data$d.high6)="Change in % high 6 mo"
+label(data$d.low3)="Change in % low 3 mo"
+label(data$d.low6)="Change in % low 6 mo"
+label(data$d.inrange3)="Change in % in range 3 mo"
+label(data$d.inrange6)="Change in % in range 6 mo"
+label(data$d.smod3)="Change in total SMOD 3 mo"
+label(data$d.smod6)="Change in total SMOD 6 mo"
+# not sure what is going on with SMOD - most of the values are m issing
+# sent an email to Sonalee
 
 # Table 1
-tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","nih_race.factor","ethnicity.factor","insulindelivery.factor","cgm.factor","insnew","homes.factor","income.factor"),
+tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","nih_race.factor","ethnicity.factor","insulindelivery.factor",
+                           "cgm.factor","insnew","homes.factor","income.factor"),
                     group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1)
+
+# Table 2 - table of changes
+tab2 <- final_table(data,c("d.mwikad3","d.mwikad6","d.a1c3","d.a1c6","d.bgtest3","d.bgtest6","d.high3","d.high6",
+                           "d.low3","d.low6","d.inrange3","d.inrange6","d.smod3","d.smod6")
+                    ,group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1)
+
+# ++++++++++++++++++++++++++++
+# flattenCorrMatrix
+# ++++++++++++++++++++++++++++
+# cormat : matrix of the correlation coefficients
+# pmat : matrix of the correlation p-values
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+corrout <- rcorr(as.matrix(data[, c()])
+                  ,type = "spearman")
+corrout <- flattenCorrMatrix(corrout$r, corrout$P)
 
 ```
 
+# Background
 
+# Methods
+
+# Results
+
+```{r, results='asis',tidy=TRUE, echo=FALSE}
+kable(tab1,caption="Table 1.  Descriptive statistics by group.")
+```
+\
+```{r, results='asis',tidy=TRUE, echo=FALSE}
+kable(tab2,caption="Table 2.  Changes in study outcomes by group.")
+```
+\

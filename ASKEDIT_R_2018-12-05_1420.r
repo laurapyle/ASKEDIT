@@ -4,7 +4,7 @@ graphics.off()
 #Load Hmisc library
 library(Hmisc)
 #Read Data
-data=read.csv('ASKEDIT_DATA_2018-12-04_1827.csv')
+data=read.csv('H:\\BDC\\Ravi\\Data\\ASKEDIT_DATA_2018-12-05_1420.csv')
 #Setting Labels
 
 label(data$pid)="Participant ID"
@@ -44,6 +44,9 @@ label(data$inrange6month)="6 month % in rage"
 label(data$low6month)="6 month % low"
 label(data$response_rate)="3 month response rate"
 label(data$response_rate_6_months)="6 month response rate"
+label(data$totalenroll)="SMODA Enrollment Total Score"
+label(data$totalsmod3month)="SMODA 3 month total score"
+label(data$totalsmod6month)="SMODA 6 month Total Score"
 #Setting Units
 
 
@@ -72,4 +75,4 @@ levels(data$cgm.factor)=c("Yes, Dexcom","Yes, Medtronic","Yes, Other","No")
 levels(data$grade.factor)=c("7th","8th","9th","10th","11th","12th","Graduated high school, currently enrolled in college","Graduated high school, not enrolled in college","I got my GED")
 levels(data$insurance.factor)=c("Private Insurance","Medicaid","Medicare","CHP+","Tricare","Currently do not have medical insurance")
 levels(data$homes.factor)=c("Yes, I spend about equal time in each","Yes, but I mostly spend time at one","No")
-levels(data$income.factor)=c("$150,000","I dont know")
+#levels(data$income.factor)=c("$150,000","I dont know")
