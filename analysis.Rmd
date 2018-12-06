@@ -1,7 +1,7 @@
 ---
-title: "ASKEDIT"
+title: "ASKED-IT"
 author: "Laura Pyle"
-date: "December 4, 2018"
+date: "`r format(Sys.time(), '%d %B %Y')`"
 output: word_document
 ---
 
@@ -11,8 +11,15 @@ knitr::opts_chunk$set(echo = FALSE)
 library(knitr)
 
 source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-05_1420.r")
+
 source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\temp_table1.r")
+
 source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\01_functions.r")
+
+#source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-06_1058.r")
+#source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-06_1108.r")
+# SMOD datasets are long, not wide
+
 
 # collapse insurance to private vs. public
 data$insnew[data$insurance==1] <- "Private"
@@ -64,6 +71,7 @@ label(data$d.smod6)="Change in total SMOD 6 mo"
 # not sure what is going on with SMOD - most of the values are m issing
 # sent an email to Sonalee
 
+
 # Table 1
 tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","nih_race.factor","ethnicity.factor","insulindelivery.factor",
                            "cgm.factor","insnew","homes.factor","income.factor"),
@@ -71,7 +79,7 @@ tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","nih_race.fac
 
 # Table 2 - table of changes
 tab2 <- final_table(data,c("d.mwikad3","d.mwikad6","d.a1c3","d.a1c6","d.bgtest3","d.bgtest6","d.high3","d.high6",
-                           "d.low3","d.low6","d.inrange3","d.inrange6","d.smod3","d.smod6")
+                           "d.low3","d.low6","d.inrange3","d.inrange6")
                     ,group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1)
 
 # ++++++++++++++++++++++++++++
@@ -88,23 +96,41 @@ flattenCorrMatrix <- function(cormat, pmat) {
     p = pmat[ut]
     )
 }
-corrout <- rcorr(as.matrix(data[, c()])
+corrout <- rcorr(as.matrix(data[, c("d.mwikad3","d.mwikad6","d.a1c3","d.a1c6","d.bgtest3","d.bgtest6","d.high3","d.high6",
+                           "d.low3","d.low6","d.inrange3","d.inrange6","response_rate","response_rate_6_months")])
                   ,type = "spearman")
 corrout <- flattenCorrMatrix(corrout$r, corrout$P)
+corrout <- corrout[corrout$column=="response_rate" | corrout$column=="response_rate_6_months",]
 
 ```
 
 # Background
 
+The purpose of the ASKED-IT study is to test whether a texting intervention improves diabetes knowledge, self-care, and adherence.
+
 # Methods
 
+The distributions of all variables were examined prior to analysis.  Groups were compared using t-tests or Mann Whitney U-tests for continuous variables, and chi-square or Fisher's exact tests for categorical variables.  Spearman's correlation coefficient was used to examine the association between response rate and study outcomes in the intervention group.
+
 # Results
+
+Table 1 shows descriptive statistics by group.
 
 ```{r, results='asis',tidy=TRUE, echo=FALSE}
 kable(tab1,caption="Table 1.  Descriptive statistics by group.")
 ```
 \
+
+Comparisons of changes in study outcomes are shown in Table 2.
+
 ```{r, results='asis',tidy=TRUE, echo=FALSE}
 kable(tab2,caption="Table 2.  Changes in study outcomes by group.")
+```
+\
+
+Correlations between study outcomes and response rates for participants in the intervention group are shown in Table 3.
+
+```{r, results='asis',tidy=TRUE, echo=FALSE}
+kable(corrout,caption="Table 2.  Correlations between study outcomes and response rates.  Changes in study outcomes are denoted with a 'd.' prior to the variable name.  The number at the end of the variable name indicates the time period over which the change was calculated.  For example, 'd.inrange3' is the change in the percent in range from enrollment to 3 months.")
 ```
 \
