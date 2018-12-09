@@ -117,14 +117,14 @@ The distributions of all variables were examined prior to analysis.  Groups were
 Table 1 shows descriptive statistics by group.
 
 ```{r, results='asis',tidy=TRUE, echo=FALSE}
-kable(tab1,caption="Table 1.  Descriptive statistics by group.")
+kable(tab1,caption="Table 1.  Descriptive statistics by group.  Statistics given are N(%), mean±SD, or median (25th %ile, 75th %ile).  * denotes that the Mannn-Whitney test was used, and ** denotes that Fisher's exact test was used.")
 ```
 \
 
 Comparisons of changes in study outcomes are shown in Table 2.
 
 ```{r, results='asis',tidy=TRUE, echo=FALSE}
-kable(tab2,caption="Table 2.  Changes in study outcomes by group.")
+kable(tab2,caption="Table 2.  Changes in study outcomes by group.  Statistics given are N(%), mean±SD, or median (25th %ile, 75th %ile).  * denotes that the Mannn-Whitney test was used, and ** denotes that Fisher's exact test was used.")
 ```
 \
 
