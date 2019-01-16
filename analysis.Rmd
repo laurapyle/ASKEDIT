@@ -10,15 +10,30 @@ knitr::opts_chunk$set(echo = FALSE)
 
 library(knitr)
 
+
+# read in SMOD datasets are long, not wide
+source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2019-01-16_1449.r")
+smod <- data
+# keep only the score variables
+#smod <- smod[,c("pid","redcap_event_name","care_subscale","problem_solve_score","communication_score",     
+#                "goal_score","smod_score")]
+smod <- smod[,c("pid","redcap_event_name","smod_score")]
+# before reshaping the datasets, need to make new time var
+smod$visit[smod$redcap_event_name %in% c("enrollment_arm_2","enrollment_arm_1")] <- "0"
+smod$visit[smod$redcap_event_name %in% c("3_months_arm_2","3_months_arm_1")] <- "3"
+smod$visit[smod$redcap_event_name %in% c("6_months_arm_1","6_months_arm_2")] <- "6"
+smod <- smod[,-2]
+smod_wide <- reshape(smod,timevar="visit",direction="wide",idvar="pid")
+# calculate deltas
+smod_wide$d.smod3 <- smod_wide$smod_score.3 - smod_wide$smod_score.0
+smod_wide$d.smod6 <- smod_wide$smod_score.6 - smod_wide$smod_score.0
+
+# read in main dataset
 source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-05_1420.r")
 
 source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\temp_table1.r")
 
 source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\01_functions.r")
-
-#source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-06_1058.r")
-#source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-06_1108.r")
-# SMOD datasets are long, not wide
 
 
 # collapse insurance to private vs. public
@@ -42,8 +57,9 @@ data$d.low3 <-data$low3month - data$enrolllow
 data$d.low6 <- data$low6month - data$enrolllow
 data$d.inrange3 <- data$inrange3month - data$enrollinrange
 data$d.inrange6 <- data$inrange6month - data$enrollinrange
-data$d.smod3 <- data$totalsmod3month - data$totalenroll
-data$d.smod6 <- data$totalsmod6month - data$totalenroll
+
+# merge in smod data
+data <- merge(data,smod_wide,by="pid")
 
 # labels
 label(data$nih_sex.factor)="Sex"
@@ -68,8 +84,7 @@ label(data$d.inrange3)="Change in % in range 3 mo"
 label(data$d.inrange6)="Change in % in range 6 mo"
 label(data$d.smod3)="Change in total SMOD 3 mo"
 label(data$d.smod6)="Change in total SMOD 6 mo"
-# not sure what is going on with SMOD - most of the values are m issing
-# sent an email to Sonalee
+
 
 
 # Table 1
@@ -79,7 +94,7 @@ tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","nih_race.fac
 
 # Table 2 - table of changes
 tab2 <- final_table(data,c("d.mwikad3","d.mwikad6","d.a1c3","d.a1c6","d.bgtest3","d.bgtest6","d.high3","d.high6",
-                           "d.low3","d.low6","d.inrange3","d.inrange6")
+                           "d.low3","d.low6","d.inrange3","d.inrange6","d.smod3","d.smod6")
                     ,group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1)
 
 # ++++++++++++++++++++++++++++
@@ -97,7 +112,8 @@ flattenCorrMatrix <- function(cormat, pmat) {
     )
 }
 corrout <- rcorr(as.matrix(data[, c("d.mwikad3","d.mwikad6","d.a1c3","d.a1c6","d.bgtest3","d.bgtest6","d.high3","d.high6",
-                           "d.low3","d.low6","d.inrange3","d.inrange6","response_rate","response_rate_6_months")])
+                           "d.low3","d.low6","d.inrange3","d.inrange6","d.smod3","d.smod6",
+                           "response_rate","response_rate_6_months")])
                   ,type = "spearman")
 corrout <- flattenCorrMatrix(corrout$r, corrout$P)
 corrout <- corrout[corrout$column=="response_rate" | corrout$column=="response_rate_6_months",]
