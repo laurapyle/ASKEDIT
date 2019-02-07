@@ -4,7 +4,7 @@ graphics.off()
 #Load Hmisc library
 library(Hmisc)
 #Read Data
-smod1=read.csv('H:\\BDC\\Ravi\\Data\\ASKEDIT_DATA_2018-12-06_1058.csv')
+smod1=read.csv('S:/Shared Projects/Laura/BDC/Projects/Sonalee Ravi/ASKED-IT/Data/ASKEDIT_DATA_2018-12-06_1058.csv')
 #Setting Labels
 
 label(smod1$pid)="Participant ID"

@@ -2,7 +2,7 @@ graphics.off()
 #Load Hmisc library
 library(Hmisc)
 #Read Data
-data=read.csv('H:\\BDC\\Ravi\\Data\\ASKEDIT_DATA_2018-12-05_1420.csv')
+data=read.csv('S:/Shared Projects/Laura/BDC/Projects/Sonalee Ravi/ASKED-IT/Data/ASKEDIT_DATA_2018-12-05_1420.csv')
 #Setting Labels
 
 label(data$pid)="Participant ID"

@@ -14,9 +14,28 @@ library(knitr)
 # read in SMOD datasets are long, not wide
 source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2019-01-16_1449.r")
 smod <- data
-# keep only the score variables
-#smod <- smod[,c("pid","redcap_event_name","care_subscale","problem_solve_score","communication_score",     
-#                "goal_score","smod_score")]
+
+# create another dataframe with smod subscales
+smod_sub <- smod[,c("pid","redcap_event_name","collaboration_score","care_subscale","problem_solve_score","communication_score","goal_score")]
+# before reshaping the datasets, need to make new time var
+smod_sub$visit[smod_sub$redcap_event_name %in% c("enrollment_arm_2","enrollment_arm_1")] <- "0"
+smod_sub$visit[smod_sub$redcap_event_name %in% c("3_months_arm_2","3_months_arm_1")] <- "3"
+smod_sub$visit[smod_sub$redcap_event_name %in% c("6_months_arm_1","6_months_arm_2")] <- "6"
+smod_sub <- smod_sub[,-2]
+smod_sub_wide <- reshape(smod_sub,timevar="visit",direction="wide",idvar="pid")
+# calculate deltas
+smod_sub_wide$d.collaboration3 <- smod_sub_wide$collaboration_score.3 - smod_sub_wide$collaboration_score.0
+smod_sub_wide$d.collaboration6 <- smod_sub_wide$collaboration_score.6 - smod_sub_wide$collaboration_score.0
+smod_sub_wide$d.care3 <- smod_sub_wide$care_subscale.3 - smod_sub_wide$care_subscale.0
+smod_sub_wide$d.care6 <- smod_sub_wide$care_subscale.6 - smod_sub_wide$care_subscale.0
+smod_sub_wide$d.solve3 <- smod_sub_wide$problem_solve_score.3 - smod_sub_wide$problem_solve_score.0
+smod_sub_wide$d.solve6 <- smod_sub_wide$problem_solve_score.6 - smod_sub_wide$problem_solve_score.0
+smod_sub_wide$d.comm3 <- smod_sub_wide$communication_score.3 - smod_sub_wide$communication_score.0
+smod_sub_wide$d.comm6 <- smod_sub_wide$communication_score.6 - smod_sub_wide$communication_score.0
+smod_sub_wide$d.goal3 <- smod_sub_wide$goal_score.3 - smod_sub_wide$goal_score.0
+smod_sub_wide$d.goal6 <- smod_sub_wide$goal_score.6 - smod_sub_wide$goal_score.0
+
+# create dataframe with main smod score
 smod <- smod[,c("pid","redcap_event_name","smod_score")]
 # before reshaping the datasets, need to make new time var
 smod$visit[smod$redcap_event_name %in% c("enrollment_arm_2","enrollment_arm_1")] <- "0"
@@ -27,6 +46,7 @@ smod_wide <- reshape(smod,timevar="visit",direction="wide",idvar="pid")
 # calculate deltas
 smod_wide$d.smod3 <- smod_wide$smod_score.3 - smod_wide$smod_score.0
 smod_wide$d.smod6 <- smod_wide$smod_score.6 - smod_wide$smod_score.0
+
 
 # read in main dataset
 source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-05_1420.r")
@@ -85,7 +105,20 @@ label(data$d.inrange6)="Change in % in range 6 mo"
 label(data$d.smod3)="Change in total SMOD 3 mo"
 label(data$d.smod6)="Change in total SMOD 6 mo"
 
+# merge in smod subscales
+data <- merge(data,smod_sub_wide,by="pid")
 
+# more labels
+label(data$d.collaboration3)="Change in SMOD collaboration score 3 mo"
+label(data$d.collaboration6)="Change in SMOD collaboration score 6 mo"
+label(data$d.care3)="Change in SMOD care score 3 mo"
+label(data$d.care6)="Change in SMOD care score 6 mo"
+label(data$d.solve3)="Change in SMOD problem solving score 3 mo"
+label(data$d.solve6)="Change in SMOD problem solving score 6 mo"
+label(data$d.comm3)="Change in SMOD communication score 3 mo"
+label(data$d.comm6)="Change in SMOD communication score 6 mo"
+label(data$d.goal3)="Change in SMOD goal score 3 mo"
+label(data$d.goal6)="Change in SMOD goal score 6 mo"
 
 # Table 1
 tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","nih_race.factor","ethnicity.factor","insulindelivery.factor",
@@ -94,7 +127,8 @@ tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","nih_race.fac
 
 # Table 2 - table of changes
 tab2 <- final_table(data,c("d.mwikad3","d.mwikad6","d.a1c3","d.a1c6","d.bgtest3","d.bgtest6","d.high3","d.high6",
-                           "d.low3","d.low6","d.inrange3","d.inrange6","d.smod3","d.smod6")
+                           "d.low3","d.low6","d.inrange3","d.inrange6","d.smod3","d.smod6","d.collaboration3","d.collaboration6",
+                           "d.care3","d.care6","d.solve3","d.solve6","d.comm3","d.comm6","d.goal3","d.goal6")
                     ,group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1)
 
 # ++++++++++++++++++++++++++++
@@ -112,7 +146,8 @@ flattenCorrMatrix <- function(cormat, pmat) {
     )
 }
 corrout <- rcorr(as.matrix(data[, c("d.mwikad3","d.mwikad6","d.a1c3","d.a1c6","d.bgtest3","d.bgtest6","d.high3","d.high6",
-                           "d.low3","d.low6","d.inrange3","d.inrange6","d.smod3","d.smod6",
+                           "d.low3","d.low6","d.inrange3","d.inrange6","d.smod3","d.smod6","d.collaboration3","d.collaboration6",
+                           "d.care3","d.care6","d.solve3","d.solve6","d.comm3","d.comm6","d.goal3","d.goal6",
                            "response_rate","response_rate_6_months")])
                   ,type = "spearman")
 corrout <- flattenCorrMatrix(corrout$r, corrout$P)
