@@ -9,10 +9,13 @@ output: word_document
 knitr::opts_chunk$set(echo = FALSE)
 
 library(knitr)
+###update this working directory to your personal cloned directory:
+#C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\
+setwd("K:\\BDC Github\\ASKEDIT")
 
 
 # read in SMOD datasets are long, not wide
-source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2019-01-16_1449.r")
+source("ASKEDIT_R_2019-01-16_1449.r")
 smod <- data
 
 # create another dataframe with smod subscales
@@ -49,11 +52,13 @@ smod_wide$d.smod6 <- smod_wide$smod_score.6 - smod_wide$smod_score.0
 
 
 # read in main dataset
-source("C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\ASKEDIT_R_2018-12-05_1420.r")
+source("ASKEDIT_R_2018-12-05_1420.r")
 
-source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\temp_table1.r")
+#source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\temp_table1.r")
+#source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\01_functions.r")
 
-source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\01_functions.r")
+source("S:\\Shared Material\\Shared Code\\R\\temp_table1.r")
+source("K:\\BDC Github\\General-code\\01_functions.r")
 
 
 # collapse insurance to private vs. public
