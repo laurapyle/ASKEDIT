@@ -86,10 +86,18 @@ data$d.inrange6 <- data$inrange6month - data$enrollinrange
 # merge in smod data
 data <- merge(data,smod_wide,by="pid")
 
+#fix race/ethnicity variable:
+data$race_eth_cat<-"Other"
+data$race_eth_cat[data$nih_race.factor=="White"]<-"Non-Hispanic White"
+data$race_eth_cat[data$ethnicity.factor=="Hispanic or Latino"]<-"Hispanic"
+data$race_eth_cat[data$nih_race.factor=="Black or African-American"]<-"Black"
+data$race_eth_cat<-as.factor(data$race_eth_cat)
+
 # labels
 label(data$nih_sex.factor)="Sex"
 label(data$nih_race.factor)="Race"
 label(data$ethnicity.factor)="Ethnicity"
+label(data$race_eth_cat)="Race/Ethnicity"
 label(data$insulindelivery.factor)="Insulin delivery"
 label(data$cgm.factor)="CGM"
 label(data$homes.factor)="Do you live in more than one home?"
@@ -124,9 +132,13 @@ label(data$d.comm3)="Change in SMOD communication score 3 mo"
 label(data$d.comm6)="Change in SMOD communication score 6 mo"
 label(data$d.goal3)="Change in SMOD goal score 3 mo"
 label(data$d.goal6)="Change in SMOD goal score 6 mo"
+label(data$mwikadenroll)<-"MWIKAD Baseline"
+label(data$mwikad3month)<-"MWIKAD 3 Months"
+label(data$mwikad6month)<-"MWIKAD 6 Months"
+
 
 # Table 1
-tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","nih_race.factor","ethnicity.factor","insulindelivery.factor",
+tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","race_eth_cat","insulindelivery.factor",
                            "cgm.factor","insnew","homes.factor","income.factor"),
                     group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1)
 
@@ -135,6 +147,32 @@ tab2 <- final_table(data,c("d.mwikad3","d.mwikad6","d.a1c3","d.a1c6","d.bgtest3"
                            "d.low3","d.low6","d.inrange3","d.inrange6","d.smod3","d.smod6","d.collaboration3","d.collaboration6",
                            "d.care3","d.care6","d.solve3","d.solve6","d.comm3","d.comm6","d.goal3","d.goal6")
                     ,group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1)
+
+# Table 2b - table of raw values, requested by sonalee on 2/26:
+
+tab2b <- final_table(data,c("mwikadenroll","mwikad3month","mwikad6month",
+                            "collaboration_score.0","collaboration_score.3","collaboration_score.6",
+                            "care_subscale.0","care_subscale.3","care_subscale.6",
+                            "problem_solve_score.0","problem_solve_score.3","problem_solve_score.6",
+                            "communication_score.0","communication_score.3","communication_score.6",
+                            "goal_score.0","goal_score.3","goal_score.6",
+                            "smod_score.0","smod_score.3","smod_score.6")
+                    ,group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1,summary.stat ='both')
+
+tab2b
+
+# Loss to follow-up comparison, requested by sonalee on 2/26:
+
+tab_ltfu <- final_table(data,c("mwikadenroll","mwikad3month","mwikad6month",
+                            "collaboration_score.0","collaboration_score.3","collaboration_score.6",
+                            "care_subscale.0","care_subscale.3","care_subscale.6",
+                            "problem_solve_score.0","problem_solve_score.3","problem_solve_score.6",
+                            "communication_score.0","communication_score.3","communication_score.6",
+                            "goal_score.0","goal_score.3","goal_score.6",
+                            "smod_score.0","smod_score.3","smod_score.6")
+                    ,group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1,summary.stat ='both')
+
+tab_ltfu
 
 # ++++++++++++++++++++++++++++
 # flattenCorrMatrix
