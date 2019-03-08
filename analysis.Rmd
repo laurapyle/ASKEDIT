@@ -93,6 +93,13 @@ data$race_eth_cat[data$ethnicity.factor=="Hispanic or Latino"]<-"Hispanic"
 data$race_eth_cat[data$nih_race.factor=="Black or African-American"]<-"Black"
 data$race_eth_cat<-as.factor(data$race_eth_cat)
 
+# dropout variables:
+data$sixmontha1c<-"No 6 Month A1C"
+data$sixmontha1c[!is.na(data$a1c6month)]<-"6 Month A1C"
+
+data$sixmonthSMOD<-"No 6 Month SMOD"
+data$sixmonthSMOD[!is.na(data$smod_score.6)]<-"6 Month SMOD"
+
 # labels
 label(data$nih_sex.factor)="Sex"
 label(data$nih_race.factor)="Race"
@@ -137,6 +144,7 @@ label(data$mwikad3month)<-"MWIKAD 3 Months"
 label(data$mwikad6month)<-"MWIKAD 6 Months"
 
 
+
 # Table 1
 tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","race_eth_cat","insulindelivery.factor",
                            "cgm.factor","insnew","homes.factor","income.factor"),
@@ -163,16 +171,55 @@ tab2b
 
 # Loss to follow-up comparison, requested by sonalee on 2/26:
 
-tab_ltfu <- final_table(data,c("mwikadenroll","mwikad3month","mwikad6month",
-                            "collaboration_score.0","collaboration_score.3","collaboration_score.6",
-                            "care_subscale.0","care_subscale.3","care_subscale.6",
-                            "problem_solve_score.0","problem_solve_score.3","problem_solve_score.6",
-                            "communication_score.0","communication_score.3","communication_score.6",
-                            "goal_score.0","goal_score.3","goal_score.6",
-                            "smod_score.0","smod_score.3","smod_score.6")
-                    ,group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1,summary.stat ='both')
+tab_ltfu.1 <- final_table(data,c("age","nih_sex.factor","diab_durration","race_eth_cat","insulindelivery.factor",
+                           "cgm.factor","insnew","homes.factor","income.factor","a1c3month",
+                           "mwikadenroll","collaboration_score.0","care_subscale.0","problem_solve_score.0",
+                           "communication_score.0","goal_score.0","smod_score.0")
+                    ,group=as.factor(data$sixmontha1c),margin=2,single=0,ron=1,summary.stat ='both')
 
-tab_ltfu
+tab_ltfu.1
+
+# split by group:
+data.int<-subset(data,data$redcap_event_name.factor=="Enrollment (Arm 2: Texting)")
+data.con<-subset(data,data$redcap_event_name.factor=="Enrollment (Arm 1: Control)")
+
+tab_ltfu.1_int <- final_table(data.int,c("age","nih_sex.factor","diab_durration","race_eth_cat","insulindelivery.factor",
+                           "cgm.factor","insnew","homes.factor","income.factor","a1c3month",
+                           "mwikadenroll","collaboration_score.0","care_subscale.0","problem_solve_score.0",
+                           "communication_score.0","goal_score.0","smod_score.0")
+                    ,group=as.factor(data.int$sixmontha1c),margin=2,single=0,ron=1,summary.stat ='both')
+
+tab_ltfu.1_int
+tab_ltfu.1_con <- final_table(data.con,c("age","nih_sex.factor","diab_durration","race_eth_cat","insulindelivery.factor",
+                           "cgm.factor","insnew","homes.factor","income.factor","a1c3month",
+                           "mwikadenroll","collaboration_score.0","care_subscale.0","problem_solve_score.0",
+                           "communication_score.0","goal_score.0","smod_score.0")
+                    ,group=as.factor(data.con$sixmontha1c),margin=2,single=0,ron=1,summary.stat ='both')
+
+tab_ltfu.1_con
+
+tab_ltfu.2 <- final_table(data,c("age","nih_sex.factor","diab_durration","race_eth_cat","insulindelivery.factor",
+                           "cgm.factor","insnew","homes.factor","income.factor","a1c3month",
+                           "mwikadenroll","collaboration_score.0","care_subscale.0","problem_solve_score.0",
+                           "communication_score.0","goal_score.0","smod_score.0")
+                    ,group=as.factor(data$sixmonthSMOD),margin=2,single=0,ron=1,summary.stat ='both')
+
+tab_ltfu.2
+
+tab_ltfu.2_int <- final_table(data.int,c("age","nih_sex.factor","diab_durration","race_eth_cat","insulindelivery.factor",
+                           "cgm.factor","insnew","homes.factor","income.factor","a1c3month",
+                           "mwikadenroll","collaboration_score.0","care_subscale.0","problem_solve_score.0",
+                           "communication_score.0","goal_score.0","smod_score.0")
+                    ,group=as.factor(data.int$sixmonthSMOD),margin=2,single=0,ron=1,summary.stat ='both')
+
+tab_ltfu.2_int
+tab_ltfu.2_con <- final_table(data.con,c("age","nih_sex.factor","diab_durration","race_eth_cat","insulindelivery.factor",
+                           "cgm.factor","insnew","homes.factor","income.factor","a1c3month",
+                           "mwikadenroll","collaboration_score.0","care_subscale.0","problem_solve_score.0",
+                           "communication_score.0","goal_score.0","smod_score.0")
+                    ,group=as.factor(data.con$sixmonthSMOD),margin=2,single=0,ron=1,summary.stat ='both')
+
+tab_ltfu.2_con
 
 # ++++++++++++++++++++++++++++
 # flattenCorrMatrix
