@@ -1,6 +1,6 @@
 ---
 title: "ASKED-IT"
-author: "Laura Pyle"
+author: "Laura Pyle and Kristen Campbell"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: word_document
 ---
@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(knitr)
 ###update this working directory to your personal cloned directory:
 #C:\\Users\\pylell\\Documents\\GitHub\\ASKEDIT\\
-setwd("K:\\BDC Github\\ASKEDIT")
+setwd("C:\\Users\\campbkri\\Documents\\GitHub\\ASKEDIT")
 
 
 # read in SMOD datasets are long, not wide
@@ -58,7 +58,7 @@ source("ASKEDIT_R_2018-12-05_1420.r")
 #source("C:\\Users\\pylell\\Documents\\GitHub\\General-code\\01_functions.r")
 
 source("S:\\Shared Material\\Shared Code\\R\\temp_table1.r")
-source("K:\\BDC Github\\General-code\\01_functions.r")
+source("C:\\Users\\campbkri\\Documents\\GitHub\\General-code\\01_functions.r")
 
 
 # collapse insurance to private vs. public
@@ -171,6 +171,7 @@ tab2b
 
 # Loss to follow-up comparison, requested by sonalee on 2/26:
 
+
 tab_ltfu.1 <- final_table(data,c("age","nih_sex.factor","diab_durration","race_eth_cat","insulindelivery.factor",
                            "cgm.factor","insnew","homes.factor","income.factor","a1c3month",
                            "mwikadenroll","collaboration_score.0","care_subscale.0","problem_solve_score.0",
@@ -178,7 +179,6 @@ tab_ltfu.1 <- final_table(data,c("age","nih_sex.factor","diab_durration","race_e
                     ,group=as.factor(data$sixmontha1c),margin=2,single=0,ron=1,summary.stat ='both')
 
 tab_ltfu.1
-
 # split by group:
 data.int<-subset(data,data$redcap_event_name.factor=="Enrollment (Arm 2: Texting)")
 data.con<-subset(data,data$redcap_event_name.factor=="Enrollment (Arm 1: Control)")
@@ -243,6 +243,16 @@ corrout <- rcorr(as.matrix(data[, c("d.mwikad3","d.mwikad6","d.a1c3","d.a1c6","d
 corrout <- flattenCorrMatrix(corrout$r, corrout$P)
 corrout <- corrout[corrout$column=="response_rate" | corrout$column=="response_rate_6_months",]
 
+##re-run high and inrange with only those who had CGM:
+data.cgm<-subset(data,data$cgm!="No")
+
+corrout_2 <- rcorr(as.matrix(data.cgm[, c("d.high3","d.high6",
+                          "d.inrange3","d.inrange6",
+                           "response_rate","response_rate_6_months")])
+                  ,type = "spearman")
+corrout_2 <- flattenCorrMatrix(corrout_2$r, corrout_2$P)
+corrout_2 <- corrout_2[corrout_2$column=="response_rate" | corrout_2$column=="response_rate_6_months",]
+
 ```
 
 # Background
@@ -262,16 +272,43 @@ kable(tab1,caption="Table 1.  Descriptive statistics by group.  Statistics given
 ```
 \
 
-Comparisons of changes in study outcomes are shown in Table 2.
+Table 2 shows a summary of study outcomes by group
 
 ```{r, results='asis',tidy=TRUE, echo=FALSE}
-kable(tab2,caption="Table 2.  Changes in study outcomes by group.  Statistics given are N(%), mean±SD, or median (25th %ile, 75th %ile).  * denotes that the Mannn-Whitney test was used, and ** denotes that Fisher's exact test was used.")
+kable(tab2b,caption="Table 2.  Summary of study outcomes by group.  Statistics given are N(%), mean±SD, or median (25th %ile, 75th %ile).  * denotes that the Mannn-Whitney test was used, and ** denotes that Fisher's exact test was used.")
+```
+
+Comparisons of changes in study outcomes are shown in Table 3.
+
+```{r, results='asis',tidy=TRUE, echo=FALSE}
+kable(tab2,caption="Table 3.  Changes in study outcomes by group.  Statistics given are N(%), mean±SD, or median (25th %ile, 75th %ile).  * denotes that the Mannn-Whitney test was used, and ** denotes that Fisher's exact test was used.")
 ```
 \
 
-Correlations between study outcomes and response rates for participants in the intervention group are shown in Table 3.
+Correlations between study outcomes and response rates for participants in the intervention group are shown in Table 4.
 
 ```{r, results='asis',tidy=TRUE, echo=FALSE}
-kable(corrout,caption="Table 2.  Correlations between study outcomes and response rates.  Changes in study outcomes are denoted with a 'd.' prior to the variable name.  The number at the end of the variable name indicates the time period over which the change was calculated.  For example, 'd.inrange3' is the change in the percent in range from enrollment to 3 months.")
+kable(corrout,caption="Table 4.  Correlations between study outcomes and response rates.  Changes in study outcomes are denoted with a 'd.' prior to the variable name.  The number at the end of the variable name indicates the time period over which the change was calculated.  For example, 'd.inrange3' is the change in the percent in range from enrollment to 3 months.")
+```
+\
+
+Correlations between study outcomes and response rates for participants who had CGM are shown in Table 4b.
+
+```{r, results='asis',tidy=TRUE, echo=FALSE}
+kable(corrout_2,caption="Table 4b.  Correlations between study outcomes and response rates in patients with CGM.  Changes in study outcomes are denoted with a 'd.' prior to the variable name.  The number at the end of the variable name indicates the time period over which the change was calculated.  For example, 'd.inrange3' is the change in the percent in range from enrollment to 3 months.")
+```
+\
+
+Table 5a: comparison of baseline characteristics for those who completed the study versus those who were loss to follow-up (A1C).
+
+```{r, results='asis',tidy=TRUE, echo=FALSE}
+kable(tab_ltfu.1,caption="Table 5a.  Comparison of baseline characteristics between those who had a 6 month A1c versus those who did not.  Statistics given are N(%), mean±SD, or median (25th %ile, 75th %ile).  * denotes that the Mannn-Whitney test was used, and ** denotes that Fisher's exact test was used.")
+```
+\
+
+Table 5b: comparison of baseline characteristics for those who completed the study versus those who were loss to follow-up (SMOD).
+
+```{r, results='asis',tidy=TRUE, echo=FALSE}
+kable(tab_ltfu.2,caption="Table 5a.  Comparison of baseline characteristics between those who had a 6 month SMOD versus those who did not.  Statistics given are N(%), mean±SD, or median (25th %ile, 75th %ile).  * denotes that the Mannn-Whitney test was used, and ** denotes that Fisher's exact test was used.")
 ```
 \
