@@ -158,7 +158,7 @@ tab2 <- final_table(data,c("d.mwikad3","d.mwikad6","d.a1c3","d.a1c6","d.bgtest3"
 
 # Table 2b - table of raw values, requested by sonalee on 2/26:
 
-tab2b <- final_table(data,c("mwikadenroll","mwikad3month","mwikad6month",
+tab2b <- final_table(data,c("enrolla1c","enrollhigh", "mwikadenroll","mwikad3month","mwikad6month",
                             "collaboration_score.0","collaboration_score.3","collaboration_score.6",
                             "care_subscale.0","care_subscale.3","care_subscale.6",
                             "problem_solve_score.0","problem_solve_score.3","problem_solve_score.6",
