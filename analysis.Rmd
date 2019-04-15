@@ -144,10 +144,34 @@ label(data$mwikad3month)<-"MWIKAD 3 Months"
 label(data$mwikad6month)<-"MWIKAD 6 Months"
 
 
+#recategorize insulin delivery (sarit did in manuscript):
+data$insulindelivery_2<-data$insulindelivery.factor
+data$insulindelivery_2[data$insulindelivery_2=="Insulin shots with set doses at meals based on blood sugar"]<-"Insulin shots with carbohydrate counting"
+data$insulindelivery_2<-factor(data$insulindelivery_2)
+label(data$insulindelivery_2)<-"Insulin Delivery"
+#recategorize income (sarit did in manuscript):
+data$income_2<-NA
+data$income_2[data$income.factor==1]<-"<$30,000"
+data$income_2[data$income.factor==2]<-"<$30,000"
+data$income_2[data$income.factor==3]<-"<$30,000"
+data$income_2[data$income.factor==4]<-"$30,000-$50,000"
+data$income_2[data$income.factor==5]<-"$30,000-$50,000"
+data$income_2[data$income.factor==6]<-"$50,000-$100,000"
+data$income_2[data$income.factor==7]<-"$50,000-$100,000"
+data$income_2[data$income.factor==8]<-"$100,000+"
+data$income_2[data$income.factor==9]<-"$100,000+"
+data$income_2[data$income.factor==10]<-"Unknown"
 
+data$income_2<-factor(data$income_2,levels=c("<$30,000","$30,000-$50,000","$50,000-$100,000","$100,000+","Unknown"))
+label(data$income_2)<-"Family Income"
+data$cgm_yn<-NA
+data$cgm_yn[data$cgm.factor=="Yes, Dexcom"]<-"Yes"
+data$cgm_yn[data$cgm.factor=="Yes, Medtronic"]<-"Yes"
+data$cgm_yn[data$cgm.factor=="No"]<-"No"
+label(data$cgm_yn)<-"CGM"
 # Table 1
-tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","race_eth_cat","insulindelivery.factor",
-                           "cgm.factor","insnew","homes.factor","income.factor"),
+tab1 <- final_table(data,c("age","nih_sex.factor","diab_durration","race_eth_cat","insulindelivery_2",
+                           "cgm_yn","insnew","homes.factor","income_2"),
                     group=as.factor(data$redcap_event_name.factor),margin=2,single=0,ron=1)
 
 # Table 2 - table of changes
